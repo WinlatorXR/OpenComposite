@@ -73,11 +73,11 @@ if (ERROR_ON_WARNING)
 endif()
 
 # === Runtime Switcher ===
-include_external_msproject(
-	RuntimeSwitcher ${CMAKE_SOURCE_DIR}/RuntimeSwitcher/RuntimeSwitcher.csproj
-	TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC
-	PLATFORM "AnyCPU"
-)
+#include_external_msproject(
+#	RuntimeSwitcher ${CMAKE_SOURCE_DIR}/RuntimeSwitcher/RuntimeSwitcher.csproj
+#	TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC
+#	PLATFORM "AnyCPU"
+#)
 
 # === OpenVR Headers ===
 add_library(OpenVR INTERFACE)

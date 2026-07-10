@@ -7,3 +7,6 @@
 [submodule "libs/libunwind"]
 	path = libs/libunwind
 	url = https://github.com/libunwind/libunwind.git
+[submodule "openxr-sdk"]
+	path = libs/OpenXR-SDK
+	url = https://github.com/KhronosGroup/OpenXR-SDK.git
