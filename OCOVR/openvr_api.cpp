@@ -222,6 +222,9 @@ VR_INTERFACE uint32_t VR_CALLTYPE VR_InitInternal(EVRInitError* peError, EVRAppl
 VR_INTERFACE uint32_t VR_CALLTYPE VR_InitInternal2(EVRInitError* peError, EVRApplicationType eApplicationType, const char* pStartupInfo)
 {
 	OOVR_LOG_ONCEF("Initializing OpenComposite - revision %s", OC_VERSION);
+	// Unity's XRSDKOpenVR can init as Other, which SteamVR runs like a scene app
+	if (eApplicationType == VRApplication_Other)
+		eApplicationType = VRApplication_Scene;
 	BaseClientCore::appType = eApplicationType;
 	if (peError) {
 		*peError = VRInitError_None;
