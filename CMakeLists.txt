@@ -172,8 +172,8 @@ if (NOT OpenXR_FOUND OR NOT jsoncpp_FOUND)
 
 		${XrDirLoader}/xr_generated_loader.hpp
 		${XrDirLoader}/xr_generated_loader.cpp
-		${XrDir}/src/xr_generated_dispatch_table.h
-		${XrDir}/src/xr_generated_dispatch_table.c
+		${XrDir}/src/xr_generated_dispatch_table_core.h
+		${XrDir}/src/xr_generated_dispatch_table_core.c
 
 		${XrDirCommon}/filesystem_utils.cpp
 		${XrDirCommon}/object_info.cpp
