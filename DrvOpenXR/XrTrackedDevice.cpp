@@ -49,25 +49,9 @@ uint32_t XrTrackedDevice::GetStringTrackedDeviceProperty(vr::ETrackedDevicePrope
 	PROP(vr::Prop_TrackingSystemName_String, "oculus");
 	PROP(vr::Prop_ManufacturerName_String, "Oculus");
 
-	// Serials must differ per device: some titles (Serious Sam VR: The Last Hope) key controllers
-	// by serial, so every device reporting "<unknown>" collapsed both hands onto the left one and
-	// the right controller was never tracked.
-	if (prop == vr::Prop_SerialNumber_String) {
-		std::string serial;
-		switch (GetHand()) {
-		case HAND_LEFT:
-			serial = "OpenComposite_Controller_Left";
-			break;
-		case HAND_RIGHT:
-			serial = "OpenComposite_Controller_Right";
-			break;
-		default:
-			serial = DeviceIndex() == vr::k_unTrackedDeviceIndex_Hmd ? "OpenComposite_HMD" : "OpenComposite_Device_" + std::to_string(DeviceIndex());
-			break;
-		}
-		PROP(vr::Prop_SerialNumber_String, serial.c_str());
-	}
-
+	// TODO these?
+	std::string serial = "OpenComposite_" + std::to_string(DeviceIndex()); // Must be unique, some games key devices by serial
+	PROP(vr::Prop_SerialNumber_String, serial.c_str());
 	PROP(vr::Prop_RenderModelName_String, "<unknown>"); // It appears this just gets passed into IVRRenderModels as the render model name
 
 	// Used by Firebird The Unfinished - see #58
