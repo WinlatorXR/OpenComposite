@@ -39,6 +39,8 @@ typedef int ovr_enum_t;
 
 #define SESS (*ovr::session)
 
+static std::chrono::steady_clock::time_point lastPosesTime;
+
 BaseCompositor::BaseCompositor()
 {
 }
@@ -75,6 +77,7 @@ ovr_enum_t BaseCompositor::WaitGetPoses(TrackedDevicePose_t* renderPoseArray, ui
 	rightEyeSubmitted = false;
 
 	BackendManager::Instance().WaitForTrackingData();
+	lastPosesTime = std::chrono::steady_clock::now();
 
 	return GetLastPoses(renderPoseArray, renderPoseArrayCount, gamePoseArray, gamePoseArrayCount);
 }
@@ -348,7 +351,9 @@ uint32_t BaseCompositor::GetFrameTimings(vr::Compositor_FrameTiming* pTiming, ui
 
 float BaseCompositor::GetFrameTimeRemaining()
 {
-	STUBBED();
+	// OpenXR gives no frame deadline, so count down the same 90Hz frame GetFrameTiming reports from the last WaitGetPoses
+	float elapsed = std::chrono::duration<float>(std::chrono::steady_clock::now() - lastPosesTime).count();
+	return elapsed < 1.0f / 90.0f ? 1.0f / 90.0f - elapsed : 0.0f;
 }
 
 void BaseCompositor::GetCumulativeStats(OOVR_Compositor_CumulativeStats* pStats, uint32_t nStatsSizeInBytes)
