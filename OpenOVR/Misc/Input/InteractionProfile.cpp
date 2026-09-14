@@ -100,8 +100,9 @@ void InteractionProfile::AddLegacyBindings(const LegacyControllerActions& ctrl, 
 
 const InteractionProfile::ProfileList& InteractionProfile::GetProfileList()
 {
-	static std::vector<std::unique_ptr<InteractionProfile>> profiles;
-	if (profiles.empty()) {
+	// Fill it in a static initialiser, which is thread-safe: filling it lazily let another thread iterate while it reallocated
+	static const std::vector<std::unique_ptr<InteractionProfile>> list = [] {
+		std::vector<std::unique_ptr<InteractionProfile>> profiles;
 		if (xr_ext->G2Controller_Available())
 			profiles.emplace_back(std::make_unique<ReverbG2InteractionProfile>());
 
@@ -111,8 +112,9 @@ const InteractionProfile::ProfileList& InteractionProfile::GetProfileList()
 		profiles.emplace_back(std::make_unique<OculusTouchInteractionProfile>());
 		profiles.emplace_back(std::make_unique<KhrSimpleInteractionProfile>());
 		profiles.emplace_back(std::make_unique<ViveTrackerInteractionProfile>());
-	}
-	return profiles;
+		return profiles;
+	}();
+	return list;
 }
 
 InteractionProfile* InteractionProfile::GetProfileByPath(const string& name)
