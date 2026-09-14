@@ -520,6 +520,10 @@ uint32_t BaseCompositor::GetVulkanInstanceExtensionsRequired(char* pchValue, uin
 #if defined(SUPPORT_VK)
 	// Whaddya know, the OpenXR, Oculus and Valve methods work almost identically...
 	uint32_t size;
+	OOVR_FAILED_XR_ABORT(xr_ext->xrGetVulkanInstanceExtensionsKHR(xr_instance, xr_system, 0, &size, nullptr));
+	// An empty list is 0, otherwise DXVK parses the lone null as an extension name
+	if (size <= 1)
+		return 0;
 	OOVR_FAILED_XR_ABORT(xr_ext->xrGetVulkanInstanceExtensionsKHR(xr_instance, xr_system, unBufferSize, &size, pchValue));
 	return size;
 #else
@@ -531,6 +535,10 @@ uint32_t BaseCompositor::GetVulkanDeviceExtensionsRequired(VkPhysicalDevice_T* p
 {
 #if defined(SUPPORT_VK)
 	uint32_t size;
+	OOVR_FAILED_XR_ABORT(xr_ext->xrGetVulkanDeviceExtensionsKHR(xr_instance, xr_system, 0, &size, nullptr));
+	// An empty list is 0, otherwise DXVK parses the lone null as an extension name
+	if (size <= 1)
+		return 0;
 	OOVR_FAILED_XR_ABORT(xr_ext->xrGetVulkanDeviceExtensionsKHR(xr_instance, xr_system, unBufferSize, &size, pchValue));
 	return size;
 #else
