@@ -39,6 +39,8 @@ typedef int ovr_enum_t;
 
 #define SESS (*ovr::session)
 
+static std::chrono::steady_clock::time_point lastPosesTime;
+
 BaseCompositor::BaseCompositor()
 {
 }
@@ -75,6 +77,7 @@ ovr_enum_t BaseCompositor::WaitGetPoses(TrackedDevicePose_t* renderPoseArray, ui
 	rightEyeSubmitted = false;
 
 	BackendManager::Instance().WaitForTrackingData();
+	lastPosesTime = std::chrono::steady_clock::now();
 
 	return GetLastPoses(renderPoseArray, renderPoseArrayCount, gamePoseArray, gamePoseArrayCount);
 }
@@ -348,7 +351,9 @@ uint32_t BaseCompositor::GetFrameTimings(vr::Compositor_FrameTiming* pTiming, ui
 
 float BaseCompositor::GetFrameTimeRemaining()
 {
-	STUBBED();
+	// OpenXR gives no frame deadline, so count down the same 90Hz frame GetFrameTiming reports from the last WaitGetPoses
+	float elapsed = std::chrono::duration<float>(std::chrono::steady_clock::now() - lastPosesTime).count();
+	return elapsed < 1.0f / 90.0f ? 1.0f / 90.0f - elapsed : 0.0f;
 }
 
 void BaseCompositor::GetCumulativeStats(OOVR_Compositor_CumulativeStats* pStats, uint32_t nStatsSizeInBytes)
@@ -520,6 +525,10 @@ uint32_t BaseCompositor::GetVulkanInstanceExtensionsRequired(char* pchValue, uin
 #if defined(SUPPORT_VK)
 	// Whaddya know, the OpenXR, Oculus and Valve methods work almost identically...
 	uint32_t size;
+	OOVR_FAILED_XR_ABORT(xr_ext->xrGetVulkanInstanceExtensionsKHR(xr_instance, xr_system, 0, &size, nullptr));
+	// An empty list is 0, otherwise DXVK parses the lone null as an extension name
+	if (size <= 1)
+		return 0;
 	OOVR_FAILED_XR_ABORT(xr_ext->xrGetVulkanInstanceExtensionsKHR(xr_instance, xr_system, unBufferSize, &size, pchValue));
 	return size;
 #else
@@ -531,6 +540,10 @@ uint32_t BaseCompositor::GetVulkanDeviceExtensionsRequired(VkPhysicalDevice_T* p
 {
 #if defined(SUPPORT_VK)
 	uint32_t size;
+	OOVR_FAILED_XR_ABORT(xr_ext->xrGetVulkanDeviceExtensionsKHR(xr_instance, xr_system, 0, &size, nullptr));
+	// An empty list is 0, otherwise DXVK parses the lone null as an extension name
+	if (size <= 1)
+		return 0;
 	OOVR_FAILED_XR_ABORT(xr_ext->xrGetVulkanDeviceExtensionsKHR(xr_instance, xr_system, unBufferSize, &size, pchValue));
 	return size;
 #else

@@ -50,7 +50,8 @@ uint32_t XrTrackedDevice::GetStringTrackedDeviceProperty(vr::ETrackedDevicePrope
 	PROP(vr::Prop_ManufacturerName_String, "Oculus");
 
 	// TODO these?
-	PROP(vr::Prop_SerialNumber_String, "<unknown>"); // TODO
+	std::string serial = "OpenComposite_" + std::to_string(DeviceIndex()); // Must be unique, some games key devices by serial
+	PROP(vr::Prop_SerialNumber_String, serial.c_str());
 	PROP(vr::Prop_RenderModelName_String, "<unknown>"); // It appears this just gets passed into IVRRenderModels as the render model name
 
 	// Used by Firebird The Unfinished - see #58

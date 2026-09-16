@@ -132,6 +132,15 @@ void GLBaseCompositor::CopyToSwapchain(const vr::Texture_t* texture, const vr::V
 
 	// Actually copy the image across
 	GLuint dst = images.at(currentIndex);
+	if (!useBlit) {
+		glCopyImageSubData(
+		    src, GL_TEXTURE_2D, 0, viewport.offset.x, viewport.offset.y, 0, // 0 == no mipmapping, next three are xyz
+		    dst, GL_TEXTURE_2D, 0, 0, 0, 0, // Same as above but for the destination
+		    (int)createInfo.width, (int)createInfo.height, 1 // Region of the output texture to copy into (in this case, everything)
+		);
+		// glCopyImageSubData rejects incomplete textures (eg. a render target with mipmap filtering but no mips), a blit doesn't
+		useBlit = glGetError() != GL_NO_ERROR;
+	}
 	if (useBlit) {
 		glBindFramebuffer(GL_FRAMEBUFFER, fboId[1]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, dst, 0);
@@ -143,12 +152,6 @@ void GLBaseCompositor::CopyToSwapchain(const vr::Texture_t* texture, const vr::V
 		    GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	} else {
-		glCopyImageSubData(
-		    src, GL_TEXTURE_2D, 0, viewport.offset.x, viewport.offset.y, 0, // 0 == no mipmapping, next three are xyz
-		    dst, GL_TEXTURE_2D, 0, 0, 0, 0, // Same as above but for the destination
-		    (int)createInfo.width, (int)createInfo.height, 1 // Region of the output texture to copy into (in this case, everything)
-		);
 	}
 
 	// Abort if there was an OpenGL error
