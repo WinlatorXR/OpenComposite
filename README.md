@@ -1,3 +1,16 @@
+# OpenComposite for WinlatorXR
+
+**OpenComposite for WinlatorXR** is a slightly enhanced version of the upstream **[OpenComposite](https://gitlab.com/znixian/OpenOVR)**, focused on improving compatibility with Windows PCVR applications and games running through **WinlatorXR**.
+
+The project keeps the **original OpenComposite architecture and design** rather than introducing a separate implementation. The changes are focused on compatibility improvements, fixes, and adjustments required by the WinlatorXR environment while keeping the codebase as close to upstream as possible.
+
+Although the primary target is **WinlatorXR on standalone VR headsets**, the changes are designed to remain platform-independent wherever possible. All modifications should therefore also work on **desktop PCs**, making the project useful beyond the standalone VR use case.
+
+The goal is to provide a lightweight compatibility layer that allows applications designed around the SteamVR/OpenVR ecosystem to work with **OpenXR runtimes**, while preserving the familiar OpenComposite approach and minimizing unnecessary divergence from upstream.
+
+---
+Original ReadMe:
+
 # OpenComposite (OpenXR) - Play SteamVR games without SteamVR!
 [![Discord](https://img.shields.io/discord/499733750209314816.svg?style=for-the-badge&logo=discord&label=discord)](https://discord.gg/zYA6Tzs)
 [![AppVeyor](https://img.shields.io/appveyor/ci/ZNix/openovr.svg?style=for-the-badge&logo=appveyor)](https://ci.appveyor.com/project/ZNix/openovr)
