@@ -118,6 +118,12 @@ bool BaseSystem::ComputeDistortion(EVREye eEye, float fU, float fV, DistortionCo
 	return BackendManager::Instance().GetPrimaryHMD()->ComputeDistortion(eEye, fU, fV, out);
 }
 
+bool BaseSystem::ComputeDistortionSet(EVREye eEye, EVRDistortionChannel eChannel, bool bAsNormalizedDeviceCoordinates,
+    uint32_t nNumCoordinates, const DistortionCoordinate_t* pInput, DistortionCoordinate_t* pOutput)
+{
+	return false;
+}
+
 HmdMatrix34_t BaseSystem::GetEyeToHeadTransform(EVREye ovr_eye)
 {
 	return BackendManager::Instance().GetPrimaryHMD()->GetEyeToHeadTransform(ovr_eye);
@@ -228,7 +234,9 @@ void BaseSystem::GetDeviceToAbsoluteTrackingPose(ETrackingUniverseOrigin toOrigi
 
 HmdMatrix34_t BaseSystem::GetSeatedZeroPoseToStandingAbsoluteTrackingPose()
 {
-	glm::mat4 m;
+	// Identity, not an uninitialised matrix: xrLocateSpace reports no flags for a space pair the
+	// runtime cannot resolve yet, and the game would otherwise be handed stack memory as a rotation
+	glm::mat4 m(1.0f);
 	XrSpaceLocation location{ XR_TYPE_SPACE_LOCATION, nullptr, 0, {} };
 
 	OOVR_FAILED_XR_SOFT_ABORT(xrLocateSpace(xr_gbl->seatedSpace, xr_gbl->floorSpace, xr_gbl->GetBestTime(), &location));
@@ -656,6 +664,28 @@ bool BaseSystem::PollNextEventWithPose(ETrackingUniverseOrigin eOrigin, VREvent_
 	}
 
 	return true;
+}
+
+bool BaseSystem::PollNextEventWithPoseAndOverlays(ETrackingUniverseOrigin eOrigin, VREvent_t* pEvent, uint32_t uncbVREvent, vr::TrackedDevicePose_t* pTrackedDevicePose, vr::VROverlayHandle_t* pulOverlayHandle)
+{
+	if (pulOverlayHandle)
+		*pulOverlayHandle = k_ulOverlayHandleInvalid;
+	return PollNextEventWithPose(eOrigin, pEvent, uncbVREvent, pTrackedDevicePose);
+}
+
+bool BaseSystem::GetEyeTrackedFoveationCenter(HmdVector2_t* pNdcLeft, HmdVector2_t* pNdcRight)
+{
+	return false;
+}
+
+bool BaseSystem::GetEyeTrackedFoveationCenterForProjection(const HmdMatrix44_t* pProjMat, HmdVector2_t* pNdc)
+{
+	return false;
+}
+
+EVRInitError BaseSystem::SetSDKVersion(uint32_t nVersionMajor, uint32_t nVersionMinor, uint32_t nVersionBuild)
+{
+	return VRInitError_None;
 }
 
 const char* BaseSystem::GetEventTypeNameFromEnum(EVREventType eType)

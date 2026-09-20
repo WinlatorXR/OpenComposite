@@ -212,6 +212,7 @@ public:
 
 	/** Creates a new named overlay. All overlays start hidden and with default settings. */
 	vr::EVROverlayError CreateOverlay(const char* pchOverlayKey, const char* pchOverlayName, vr::VROverlayHandle_t* pOverlayHandle);
+	vr::EVROverlayError CreateSubviewOverlay(vr::VROverlayHandle_t parentOverlayHandle, const char* pchSubviewOverlayKey, const char* pchSubviewOverlayName, vr::VROverlayHandle_t* pSubviewOverlayHandle);
 
 	/** Destroys the specified overlay. When an application calls VR_Shutdown all overlays created by that app are
 	 * automatically destroyed. */
@@ -298,6 +299,7 @@ public:
 
 	/** Sets the width of the overlay quad in meters. By default overlays are rendered on a quad that is 1 meter across */
 	vr::EVROverlayError SetOverlayWidthInMeters(vr::VROverlayHandle_t ulOverlayHandle, float fWidthInMeters);
+	vr::EVROverlayError SetSubviewPosition(vr::VROverlayHandle_t ulOverlayHandle, float fX, float fY);
 
 	/** Returns the width of the overlay quad in meters. By default overlays are rendered on a quad that is 1 meter across */
 	vr::EVROverlayError GetOverlayWidthInMeters(vr::VROverlayHandle_t ulOverlayHandle, float* pfWidthInMeters);

@@ -90,7 +90,8 @@ VR_INTERFACE void* VR_CALLTYPE VR_GetGenericInterface(const char* interfaceVersi
 	// Hack for Half-Life: Alyx
 	// This is an interface that is enabled or not by what seems to be a compile-time
 	// switch inside SteamVR, disabled on the public build I was looking at.
-	if (!strcmp("IXrProto_001", interfaceVersion)) {
+	// Newer builds also ask for the internal IVRIPCResourceManagerClient, which we don't implement.
+	if (!strcmp("IXrProto_001", interfaceVersion) || !strncmp("IVRIPCResourceManagerClient_", interfaceVersion, 28)) {
 		if (error)
 			*error = VRInitError_Init_InterfaceNotFound;
 		return NULL;
