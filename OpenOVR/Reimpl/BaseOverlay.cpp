@@ -180,6 +180,10 @@ EVROverlayError BaseOverlay::FindOverlay(const char* pchOverlayKey, VROverlayHan
 	// TODO is this the correct return value
 	return VROverlayError_InvalidParameter;
 }
+EVROverlayError BaseOverlay::CreateSubviewOverlay(VROverlayHandle_t parentOverlayHandle, const char* pchSubviewOverlayKey, const char* pchSubviewOverlayName, VROverlayHandle_t* pSubviewOverlayHandle)
+{
+	return VROverlayError_RequestFailed;
+}
 EVROverlayError BaseOverlay::CreateOverlay(const char* pchOverlayKey, const char* pchOverlayName, VROverlayHandle_t* pOverlayHandle)
 {
 	if (overlays.count(pchOverlayKey)) {
@@ -426,6 +430,10 @@ EVROverlayError BaseOverlay::SetOverlaySortOrder(VROverlayHandle_t ulOverlayHand
 EVROverlayError BaseOverlay::GetOverlaySortOrder(VROverlayHandle_t ulOverlayHandle, uint32_t* punSortOrder)
 {
 	STUBBED();
+}
+EVROverlayError BaseOverlay::SetSubviewPosition(VROverlayHandle_t ulOverlayHandle, float fX, float fY)
+{
+	return VROverlayError_RequestFailed;
 }
 EVROverlayError BaseOverlay::SetOverlayWidthInMeters(VROverlayHandle_t ulOverlayHandle, float fWidthInMeters)
 {

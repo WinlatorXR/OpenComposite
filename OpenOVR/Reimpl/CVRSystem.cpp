@@ -15,6 +15,8 @@ GEN_INTERFACE("System", "019")
 GEN_INTERFACE("System", "020")
 GEN_INTERFACE("System", "021")
 GEN_INTERFACE("System", "022")
+// 023 to 025 never appeared in a public header
+GEN_INTERFACE("System", "026")
 
 #include "generated/GVRSystem.gen.h"
 
