@@ -607,13 +607,15 @@ IBackend::openvr_enum_t XrBackend::SetSkyboxOverride(const vr::Texture_t* pTextu
 			{ 0.0f, 0.0f, -0.65f } };
 		layerQuad.size = { 1.0f, 1.0f / 1.333f };
 
+		// The compositor skips a texture it cannot put in a swapchain, such as a block compressed
+		// one, which leaves no layer to submit - end the frame empty rather than with a null image
 		XrCompositionLayerBaseHeader* layers[1];
 		layers[0] = (XrCompositionLayerBaseHeader*)&layerQuad;
 		XrFrameEndInfo info{ XR_TYPE_FRAME_END_INFO };
 		info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
 		info.displayTime = xr_gbl->nextPredictedFrameTime;
 		info.layers = layers;
-		info.layerCount = 1;
+		info.layerCount = layerQuad.subImage.swapchain == XR_NULL_HANDLE ? 0 : 1;
 
 		OOVR_FAILED_XR_SOFT_ABORT(xrEndFrame(xr_session.get(), &info));
 

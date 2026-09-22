@@ -202,7 +202,10 @@ void DX11Compositor::CheckCreateSwapChain(const vr::Texture_t* texture, const vr
 		// Figure out what format we need to use
 		DxgiFormatInfo info = {};
 		if (!GetFormatInfo(srcDesc.Format, info)) {
-			OOVR_ABORTF("Unknown (by OC) DXGI texture format %d", srcDesc.Format);
+			// A block compressed skybox or overlay lands here (Maquette submits BC3). It cannot go in
+			// a swapchain, so leave the chain null and let the caller drop the texture
+			OOVR_LOGF("Unknown (by OC) DXGI texture format %d, skipping this texture", srcDesc.Format);
+			return;
 		}
 		bool useLinearFormat;
 		switch (texture->eColorSpace) {
@@ -293,6 +296,10 @@ void DX11Compositor::CopyToSwapchain(const vr::Texture_t* texture, const vr::VRT
 	}
 
 	CheckCreateSwapChain(texture, bounds, false);
+
+	// The format was one that cannot go in a swapchain
+	if (!chain)
+		return;
 
 	// First reserve an image from the swapchain
 	XrSwapchainImageAcquireInfo acquireInfo{ XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
