@@ -63,7 +63,12 @@ OculusTouchInteractionProfile::OculusTouchInteractionProfile()
 		{ "grip/force", "squeeze/value" },
 		{ "grip/value", "squeeze/value" },
 		{ "trigger/click", "trigger/value" },
-		{ "application_menu", "menu" }
+		{ "application_menu", "menu" },
+		// Touch has x/y on the left and a/b on the right, so a binding for the other hand's letters means the same face button
+		{ "hand/left/input/a", "hand/left/input/x" },
+		{ "hand/left/input/b", "hand/left/input/y" },
+		{ "hand/right/input/x", "hand/right/input/a" },
+		{ "hand/right/input/y", "hand/right/input/b" }
 	};
 	// TODO implement the poses through the interaction profile (the raw pose is hard-coded in BaseInput at the moment):
 	// pose/raw
@@ -74,6 +79,7 @@ OculusTouchInteractionProfile::OculusTouchInteractionProfile()
 	this->hmdPropertiesMap = {
 		{ vr::Prop_TrackingSystemName_String, "oculus" },
 		{ vr::Prop_ManufacturerName_String, "Oculus" },
+		{ vr::Prop_ModelNumber_String, "Oculus Quest" },
 	};
 
 	this->propertiesMap = {

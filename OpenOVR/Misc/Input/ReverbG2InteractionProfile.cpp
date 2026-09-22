@@ -49,6 +49,7 @@ ReverbG2InteractionProfile::ReverbG2InteractionProfile()
 
 	hmdPropertiesMap = {
 		{ vr::Prop_ManufacturerName_String, "WindowsMR" },
+		{ vr::Prop_ModelNumber_String, "WindowsMR" },
 	};
 
 	propertiesMap = {

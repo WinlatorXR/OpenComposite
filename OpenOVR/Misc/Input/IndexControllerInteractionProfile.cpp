@@ -65,6 +65,7 @@ IndexControllerInteractionProfile::IndexControllerInteractionProfile()
 	this->hmdPropertiesMap = {
 		// { vr::Prop_TrackingSystemName_String, "lighthouse" },
 		{ vr::Prop_ManufacturerName_String, "Valve" },
+		{ vr::Prop_ModelNumber_String, "Index" },
 	};
 
 	this->propertiesMap = {

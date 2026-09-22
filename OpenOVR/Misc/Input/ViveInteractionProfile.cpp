@@ -40,6 +40,9 @@ ViveWandInteractionProfile::ViveWandInteractionProfile()
 	propertiesMap = {
 		{ vr::Prop_ModelNumber_String, { "Vive. Controller MV" } },
 		{ vr::Prop_ControllerType_String, { GetOpenVRName().value() } },
+		// The legacy state's first axis carries the trackpad here, and the wand has no analog grip
+		{ vr::Prop_Axis0Type_Int32, { (int32_t)vr::k_eControllerAxis_TrackPad } },
+		{ vr::Prop_Axis2Type_Int32, { (int32_t)vr::k_eControllerAxis_None } },
 	};
 
 	/*
