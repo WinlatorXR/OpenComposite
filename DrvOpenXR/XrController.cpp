@@ -187,13 +187,29 @@ void XrController::GetPose(vr::ETrackingUniverseOrigin origin, vr::TrackedDevice
 	// Specifically use grip pose, since that's what InteractionProfile::GetGripToSteamVRTransform uses
 	GetBaseInput()->GetHandSpace(DeviceIndex(), space, false);
 
+	// Diagnostic: say once per device whether there is a hand space, and log every change of pose
+	// validity afterwards, so a game reporting no controllers can be told apart from a pose problem
+	static bool spaceLogged[3] = {}, lastValid[3] = {};
+	uint32_t devIdx = DeviceIndex() < 3 ? DeviceIndex() : 0;
+	if (!spaceLogged[devIdx]) {
+		spaceLogged[devIdx] = true;
+		OOVR_LOGF("Device %u: hand space %s, actions loaded %d", DeviceIndex(),
+		    space ? "present" : "MISSING", (int)input->AreActionsLoaded());
+	}
+
 	if (!space)
 		return;
 
 	// Find the hand transform matrix, and include that
 	glm::mat4 transform = profile.GetGripToSteamVRTransform(GetHand());
 
-	if (xr_utils::PoseFromSpace(pose, space, origin, transform)) {
+	bool located = xr_utils::PoseFromSpace(pose, space, origin, transform);
+	if (located != lastValid[devIdx]) {
+		lastValid[devIdx] = located;
+		OOVR_LOGF("Device %u: grip pose %s", DeviceIndex(), located ? "located" : "LOST");
+	}
+
+	if (located) {
 		isPoseFromHandTracking = false;
 		return;
 	}
