@@ -207,6 +207,9 @@ public:
 	 * the working directory. */
 	EVRApplicationError LaunchInternalProcess(const char* pchBinaryPath, const char* pchArguments, const char* pchWorkingDirectory);
 
+	/** Marks an already-running process as part of the calling application (IVRApplications_008). */
+	EVRApplicationError RegisterSubprocess(uint32_t nPid);
+
 	/** Returns the current scene process ID according to the application system. A scene process will get scene
 	 * focus once it starts rendering, but it will appear here once it calls VR_Init with the Scene application
 	 * type. */
