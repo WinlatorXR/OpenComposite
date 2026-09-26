@@ -271,7 +271,9 @@ ovr_enum_t BaseCompositor::Submit(EVREye eye, const Texture_t* texture, const VR
 	if (isFirstEye) {
 		isNullRender = textureNull;
 	} else if (textureNull != isNullRender) {
-		OOVR_ABORT("Cannot mismatch first and second eye renders");
+		// Borderlands 2 VR does this now and then mid-game: drop the frame, as for two null eyes
+		OOVR_LOG_ONCE("First and second eye renders mismatch, dropping the frame");
+		isNullRender = true;
 	}
 
 	{
