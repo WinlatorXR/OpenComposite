@@ -26,6 +26,12 @@ vr::HmdMatrix44_t XrHMD::GetProjectionMatrix(vr::EVREye eEye, float fNearZ, floa
 	if (eEye < 0 || (int)eEye >= 2)
 		eEye = vr::Eye_Left;
 
+	// Null during a session restart, as in GetPose
+	while (!xr_gbl) {
+		using namespace std::chrono_literals;
+		std::this_thread::sleep_for(20ms);
+	}
+
 	const XruCachedViews& cachedViews = xr_gbl->GetCachedViews(xr_gbl->seatedSpace);
 	const std::array<XrView, XruEyeCount>& views = cachedViews.views;
 	OOVR_FALSE_ABORT(cachedViews.viewCount == XruEyeCount);
@@ -79,6 +85,12 @@ void XrHMD::GetProjectionRaw(vr::EVREye eEye, float* pfLeft, float* pfRight, flo
 	// This is how SteamVR seems to handle invalid eyes
 	if (eEye < 0 || (int)eEye >= 2)
 		eEye = vr::Eye_Left;
+
+	// Null during a session restart, as in GetPose
+	while (!xr_gbl) {
+		using namespace std::chrono_literals;
+		std::this_thread::sleep_for(20ms);
+	}
 
 	// TODO deduplicate with GetProjectionMatrix
 	const XruCachedViews& cachedViews = xr_gbl->GetCachedViews(xr_gbl->seatedSpace);
@@ -271,6 +283,12 @@ void XrHMD::GetPose(vr::ETrackingUniverseOrigin origin, vr::TrackedDevicePose_t*
 
 float XrHMD::GetIPD()
 {
+	// Null during a session restart, as in GetPose
+	while (!xr_gbl) {
+		using namespace std::chrono_literals;
+		std::this_thread::sleep_for(20ms);
+	}
+
 	const XruCachedViews& cachedViews = xr_gbl->GetCachedViews(xr_gbl->viewSpace);
 	const XrViewState& state = cachedViews.viewState;
 	const std::array<XrView, XruEyeCount>& views = cachedViews.views;
