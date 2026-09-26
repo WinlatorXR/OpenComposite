@@ -1,0 +1,3 @@
+# Drop the /* out */ comment, which stops the stub generator namespacing VRNotificationId
+edit 85 1 1
+	virtual EVRNotificationError CreateNotification( VROverlayHandle_t ulOverlayHandle, uint64_t ulUserValue, EVRNotificationType type, const char *pchText, EVRNotificationStyle style, const NotificationBitmap_t *pImage, VRNotificationId *pNotificationId ) = 0;

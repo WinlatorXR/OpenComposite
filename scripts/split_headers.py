@@ -65,6 +65,7 @@ interface_exceptions = [
 patches = {
     "driver_IVRServerDriverHost_005",
     "driver_itrackeddevicedriverprovider",
+    "IVRNotifications_002",
 }
 
 #####################################################

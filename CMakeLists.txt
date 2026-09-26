@@ -335,6 +335,7 @@ add_library(OCCore STATIC
 	OpenOVR/Reimpl/BaseMailbox.cpp
 	OpenOVR/Reimpl/BaseControlPanel.cpp
 	OpenOVR/Reimpl/BaseHeadsetView.cpp
+	OpenOVR/Reimpl/BaseNotifications.cpp
 	OpenOVR/Reimpl/CVRApplications.cpp
 	OpenOVR/Reimpl/CVRChaperone.cpp
 	OpenOVR/Reimpl/CVRChaperoneSetup.cpp
@@ -352,6 +353,7 @@ add_library(OCCore STATIC
 	OpenOVR/Reimpl/CVRMailbox.cpp
 	OpenOVR/Reimpl/CVRControlPanel.cpp
 	OpenOVR/Reimpl/CVRHeadsetView.cpp
+	OpenOVR/Reimpl/CVRNotifications.cpp
 	${GENERATED_DIR}/stubs.gen.cpp
 
 	# Exclude from the PCH requirement
@@ -392,6 +394,7 @@ add_library(OCCore STATIC
 	OpenOVR/Reimpl/BaseMailbox.h
 	OpenOVR/Reimpl/BaseControlPanel.h
 	OpenOVR/Reimpl/BaseHeadsetView.h
+	OpenOVR/Reimpl/BaseNotifications.h
 	OpenOVR/Reimpl/Interfaces.h
 	${GENERATED_DIR}/static_bases.gen.h
 	OpenOVR/resources.h
