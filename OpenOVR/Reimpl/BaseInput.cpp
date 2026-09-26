@@ -2442,6 +2442,16 @@ EVRInputError BaseInput::GetActionBindingInfo(VRActionHandle_t actionHandle, OOV
 	if (punReturnedBindingInfoCount)
 		*punReturnedBindingInfoCount = 0;
 
+	// SDKs before rchInputSourceType was added (e.g. 1.5.17 in UE4 games) pass the shorter struct: fill full ones and copy that much of each
+	const uint32_t oldBindingInfoSize = offsetof(OOVR_InputBindingInfo_t, rchInputSourceType);
+	if (unBindingInfoSize == oldBindingInfoSize) {
+		std::vector<OOVR_InputBindingInfo_t> full(unBindingInfoCount);
+		EVRInputError err = GetActionBindingInfo(actionHandle, full.data(), sizeof(OOVR_InputBindingInfo_t), unBindingInfoCount, punReturnedBindingInfoCount);
+		for (uint32_t i = 0; i < unBindingInfoCount; i++)
+			memcpy((char*)bindingInfo + i * oldBindingInfoSize, &full[i], oldBindingInfoSize);
+		return err;
+	}
+
 	OOVR_FALSE_ABORT(unBindingInfoSize == sizeof(OOVR_InputBindingInfo_t));
 
 	// FIXME support any number of sources
