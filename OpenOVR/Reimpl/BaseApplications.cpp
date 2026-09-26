@@ -173,6 +173,11 @@ EVRApplicationError BaseApplications::LaunchInternalProcess(const char* pchBinar
 	return VRApplicationError_LaunchFailed;
 #endif
 }
+EVRApplicationError BaseApplications::RegisterSubprocess(uint32_t nPid)
+{
+	// No app transition UI to suppress, so there is nothing to register
+	return VRApplicationError_None;
+}
 uint32_t BaseApplications::GetCurrentSceneProcessId()
 {
 	STUBBED();
