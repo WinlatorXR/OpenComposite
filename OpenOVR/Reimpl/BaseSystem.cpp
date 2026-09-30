@@ -147,6 +147,7 @@ void BaseSystem::GetDXGIOutputInfo(int32_t* adapterIndex)
 #ifdef WIN32
 #define VALIDATE(x, msg)                                                \
 	if (!(x)) {                                                         \
+		OOVR_LOGF("Showing error box CVRSystem: %s", (msg));            \
 		MessageBoxA(nullptr, (msg), "CVRSystem", MB_ICONERROR | MB_OK); \
 		exit(-1);                                                       \
 	}

@@ -25,6 +25,7 @@ Config oovr_global_configuration;
 #ifdef WIN32
 #define ABORT(msg)                                                                        \
 	{                                                                                     \
+		OOVR_LOGF("Showing error box Config File Error: %s", string(msg).c_str());        \
 		MessageBoxA(NULL, string(msg).c_str(), "OpenComposite Config File Error", MB_OK); \
 		exit(1);                                                                          \
 	}

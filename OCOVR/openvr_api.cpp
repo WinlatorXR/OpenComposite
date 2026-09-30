@@ -212,7 +212,16 @@ VR_INTERFACE const char* VR_CALLTYPE VR_GetVRInitErrorAsEnglishDescription(EVRIn
 
 VR_INTERFACE const char* VR_CALLTYPE VR_GetVRInitErrorAsSymbol(EVRInitError error)
 {
-	OOVR_ABORT("Stub");
+	switch (error) {
+	case VRInitError_None:
+		return "VRInitError_None";
+	case VRInitError_Init_HmdNotFound:
+		return "VRInitError_Init_HmdNotFound";
+	case VRInitError_Init_NotInitialized:
+		return "VRInitError_Init_NotInitialized";
+	default:
+		return "VRInitError_Unknown";
+	}
 }
 
 VR_INTERFACE uint32_t VR_CALLTYPE VR_InitInternal(EVRInitError* peError, EVRApplicationType eApplicationType)

@@ -344,10 +344,11 @@ void oovr_soft_abort_raw(const char* file, long line, const char* func, int* cou
 
 void oovr_message_raw(const char* message, const char* title)
 {
-	// No need to log this, it will have already been done by the caller
+	// The caller has logged the message; this marks that the box is now up and blocking
 
 #ifdef WIN32
 	// Display a message box on Windows
+	OOVR_LOGF("Showing error box: %s", title ? title : "NULL");
 	MessageBoxA(nullptr, message, title, MB_OK);
 #else
 	// Try using zenity or kdialog on Linux, otherwise just print to stderr
