@@ -676,7 +676,40 @@ EVROverlayError BaseOverlay::SetOverlayMouseScale(VROverlayHandle_t ulOverlayHan
 }
 bool BaseOverlay::ComputeOverlayIntersection(VROverlayHandle_t ulOverlayHandle, const OOVR_VROverlayIntersectionParams_t* pParams, OOVR_VROverlayIntersectionResults_t* pResults)
 {
-	STUBBED();
+	USEHB();
+	if (!pParams || !pResults)
+		return false;
+
+	// Intersect with the same quad _BuildLayers submits: centred on the transform's translation,
+	// unrotated (so facing +Z), and sized from the width, the transform's scale and the texture aspect
+	const XrRect2Di& srcSize = overlay->layerQuad.subImage.imageRect;
+	const float aspect = srcSize.extent.height > 0 ? (float)srcSize.extent.width / (float)srcSize.extent.height : 1.0f;
+	const float width = overlay->widthMeters * overlay->overlayTransform[0][0];
+	const float height = overlay->widthMeters * overlay->overlayTransform[1][1] / aspect;
+	const float centre[3] = { overlay->overlayTransform[0][3], overlay->overlayTransform[1][3], overlay->overlayTransform[2][3] };
+
+	const float* src = pParams->vSource.v;
+	const float* dir = pParams->vDirection.v;
+	if (fabsf(dir[2]) < 1e-6f || width == 0.0f || height == 0.0f)
+		return false;
+
+	const float distance = (centre[2] - src[2]) / dir[2];
+	if (distance < 0.0f)
+		return false;
+
+	const float x = src[0] + dir[0] * distance;
+	const float y = src[1] + dir[1] * distance;
+	const float u = (x - centre[0]) / width + 0.5f;
+	const float v = (y - centre[1]) / height + 0.5f;
+	if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f)
+		return false;
+
+	pResults->vPoint = { x, y, centre[2] };
+	pResults->vNormal = { 0.0f, 0.0f, 1.0f };
+	// OpenVR's overlay coordinates put (0,0) at the bottom left
+	pResults->vUVs = { u, v };
+	pResults->fDistance = distance * sqrtf(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]);
+	return true;
 }
 bool BaseOverlay::HandleControllerOverlayInteractionAsMouse(VROverlayHandle_t ulOverlayHandle, TrackedDeviceIndex_t unControllerDeviceIndex)
 {
