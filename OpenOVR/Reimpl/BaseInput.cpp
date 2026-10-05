@@ -29,6 +29,7 @@
 #include <set>
 #include <utility>
 
+#include "Misc/Config.h"
 #include "Misc/xrmoreutils.h"
 
 // Use RenderModels for the pose offsets, which are the same as component positions
@@ -2719,6 +2720,13 @@ bool BaseInput::GetLegacyControllerState(vr::TrackedDeviceIndex_t controllerDevi
 	VRControllerAxis_t& thumbstick = state->rAxis[0];
 	thumbstick.x = readFloat(ctrl.stickX);
 	thumbstick.y = readFloat(ctrl.stickY);
+
+	// Games written for the Vive wand only act on the pad while it is pressed, which on a thumbstick
+	// means clicking it in. With this option, pushing the stick counts as touching and pressing the pad.
+	if (oovr_global_configuration.StickDeflectPressesTouchpad() && thumbstick.x * thumbstick.x + thumbstick.y * thumbstick.y > 0.3f * 0.3f) {
+		state->ulButtonPressed |= 1ull << vr::k_EButton_SteamVR_Touchpad;
+		state->ulButtonTouched |= 1ull << vr::k_EButton_SteamVR_Touchpad;
+	}
 
 	VRControllerAxis_t& trigger = state->rAxis[1];
 	trigger.x = readFloat(ctrl.trigger);
