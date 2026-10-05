@@ -27,7 +27,8 @@ bool BaseChaperoneSetup::GetWorkingPlayAreaRect(HmdQuad_t* rect)
 }
 bool BaseChaperoneSetup::GetWorkingCollisionBoundsInfo(VR_OUT_ARRAY_COUNT(punQuadsCount) HmdQuad_t* pQuadsBuffer, uint32_t* punQuadsCount)
 {
-	STUBBED();
+	// We never keep a separate working copy, so it always matches the live bounds. Mindshow reads this.
+	return GetLiveCollisionBoundsInfo(pQuadsBuffer, punQuadsCount);
 }
 bool BaseChaperoneSetup::GetLiveCollisionBoundsInfo(VR_OUT_ARRAY_COUNT(punQuadsCount) HmdQuad_t* pQuadsBuffer, uint32_t* punQuadsCount)
 {
