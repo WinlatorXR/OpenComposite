@@ -24,6 +24,7 @@ using namespace vr;
 
 // Binary-compatible openvr_api.dll implementation
 static bool running;
+static int init_count; // nested VR_Init calls, each paired with its own shutdown
 static bool running_ovr; // are we in an apptype which uses LibOVR?
 static uint32_t current_init_token = 1;
 static EVRApplicationType current_apptype;
@@ -284,9 +285,15 @@ VR_INTERFACE uint32_t VR_CALLTYPE VR_InitInternal2(EVRInitError* peError, EVRApp
 #endif
 			ERR("Cannot init VR: unsupported apptype " + to_string(eApplicationType));
 
-	if (running)
-		ERR("Cannot init VR: Already running!");
+	// ADR1FT inits a second time without shutting down first. Hand back the
+	// session we already have rather than aborting.
+	if (running) {
+		init_count++;
+		OOVR_LOGF("VR already initialised, reusing the running session (init count %d)", init_count);
+		return current_init_token;
+	}
 
+	init_count = 1;
 	running_ovr = true;
 
 	current_apptype = eApplicationType;
@@ -368,6 +375,13 @@ VR_INTERFACE const char* VR_CALLTYPE VR_RuntimePath()
 
 VR_INTERFACE void VR_CALLTYPE VR_ShutdownInternal()
 {
+	if (init_count > 1) {
+		init_count--;
+		OOVR_LOGF("Ignoring shutdown for a nested init (init count %d)", init_count);
+		return;
+	}
+	init_count = 0;
+
 	OOVR_LOG("OpenComposite shutdown");
 
 	// Reset interfaces
