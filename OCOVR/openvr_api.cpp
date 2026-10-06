@@ -145,7 +145,9 @@ VR_INTERFACE uint32_t VR_CALLTYPE VR_GetInitToken()
 
 VR_INTERFACE char* VR_GetStringForHmdError(int err)
 {
-	OOVR_ABORT("Stub");
+	OOVR_SOFT_ABORT("VR_GetStringForHmdError is not implemented");
+	static char unknown[] = "Unknown";
+	return unknown;
 }
 
 VR_INTERFACE const char* VR_CALLTYPE VR_GetVRInitErrorAsEnglishDescription(EVRInitError error)
@@ -370,7 +372,8 @@ VR_INTERFACE bool VR_CALLTYPE VR_IsRuntimeInstalled()
 
 VR_INTERFACE const char* VR_CALLTYPE VR_RuntimePath()
 {
-	OOVR_ABORT("Stub");
+	OOVR_SOFT_ABORT("VR_RuntimePath is not implemented");
+	return nullptr;
 }
 
 VR_INTERFACE void VR_CALLTYPE VR_ShutdownInternal()

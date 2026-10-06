@@ -42,7 +42,7 @@ vr::EVROverlayError BaseOverlayView::ReleaseOverlayView(OOVR_VROverlayView_t* pO
 /** Posts an overlay event */
 void BaseOverlayView::PostOverlayEvent(vr::VROverlayHandle_t ulOverlayHandle, const vr::VREvent_t* pvrEvent)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 /** Determines whether this process is permitted to view an overlay's content. */

@@ -365,7 +365,10 @@ float BaseCompositor::GetFrameTimeRemaining()
 
 void BaseCompositor::GetCumulativeStats(OOVR_Compositor_CumulativeStats* pStats, uint32_t nStatsSizeInBytes)
 {
-	STUBBED();
+	// No frames presented or dropped, rather than whatever was in the game's buffer
+	if (pStats)
+		memset(pStats, 0, nStatsSizeInBytes);
+	STUBBED_VOID();
 }
 
 void BaseCompositor::FadeToColor(float fSeconds, float fRed, float fGreen, float fBlue, float fAlpha, bool bBackground)
@@ -417,12 +420,12 @@ void BaseCompositor::CompositorBringToFront()
 
 void BaseCompositor::CompositorGoToBack()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 void BaseCompositor::CompositorQuit()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 bool BaseCompositor::IsFullscreen()
@@ -447,12 +450,12 @@ bool BaseCompositor::CanRenderScene()
 
 void BaseCompositor::ShowMirrorWindow()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 void BaseCompositor::HideMirrorWindow()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 bool BaseCompositor::IsMirrorWindowVisible()
@@ -462,7 +465,7 @@ bool BaseCompositor::IsMirrorWindowVisible()
 
 void BaseCompositor::CompositorDumpImages()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 bool BaseCompositor::ShouldAppRenderWithLowResources()
@@ -509,7 +512,8 @@ void BaseCompositor::ReleaseMirrorTextureD3D11(void* pD3D11ShaderResourceView)
 
 ovr_enum_t BaseCompositor::GetMirrorTextureGL(EVREye eEye, glUInt_t* pglTextureId, glSharedTextureHandle_t* pglSharedTextureHandle)
 {
-	STUBBED();
+	STUBBED_LOG();
+	return VRCompositorError_RequestFailed;
 }
 
 bool BaseCompositor::ReleaseSharedGLTexture(glUInt_t glTextureId, glSharedTextureHandle_t glSharedTextureHandle)
@@ -519,12 +523,12 @@ bool BaseCompositor::ReleaseSharedGLTexture(glUInt_t glTextureId, glSharedTextur
 
 void BaseCompositor::LockGLSharedTextureForAccess(glSharedTextureHandle_t glSharedTextureHandle)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 void BaseCompositor::UnlockGLSharedTextureForAccess(glSharedTextureHandle_t glSharedTextureHandle)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 uint32_t BaseCompositor::GetVulkanInstanceExtensionsRequired(char* pchValue, uint32_t unBufferSize)
@@ -618,5 +622,6 @@ ovr_enum_t BaseCompositor::GetLastPosePredictionIDs(uint32_t* pRenderPosePredict
 
 ovr_enum_t BaseCompositor::GetPosesForFrame(uint32_t unPosePredictionID, TrackedDevicePose_t* pPoseArray, uint32_t unPoseArrayCount)
 {
-	STUBBED();
+	STUBBED_LOG();
+	return VRCompositorError_RequestFailed;
 }

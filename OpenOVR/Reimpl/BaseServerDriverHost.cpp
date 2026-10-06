@@ -10,15 +10,15 @@ bool BaseServerDriverHost::TrackedDeviceAdded(OCTrackedDeviceDriver* driver)
 }
 void BaseServerDriverHost::TrackedDevicePoseUpdated(uint32_t unWhichDevice, const OCDriverPose_t& newPose, uint32_t unPoseStructSize)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseServerDriverHost::VsyncEvent(double vsyncTimeOffsetSeconds)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseServerDriverHost::VendorSpecificEvent(uint32_t unWhichDevice, vr::EVREventType eventType, const vr::VREvent_Data_t& eventData, double eventTimeOffset)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 bool BaseServerDriverHost::IsExiting()
 {
@@ -30,9 +30,9 @@ bool BaseServerDriverHost::PollNextEvent(vr::VREvent_t* pEvent, uint32_t uncbVRE
 }
 void BaseServerDriverHost::GetRawTrackedDevicePoses(float fPredictedSecondsFromNow, vr::TrackedDevicePose_t* pTrackedDevicePoseArray, uint32_t unTrackedDevicePoseArrayCount)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseServerDriverHost::TrackedDeviceDisplayTransformUpdated(uint32_t unWhichDevice, vr::HmdMatrix34_t eyeToHeadLeft, vr::HmdMatrix34_t eyeToHeadRight)
 {
-	STUBBED();
+	STUBBED_VOID();
 }

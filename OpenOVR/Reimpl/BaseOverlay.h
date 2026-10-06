@@ -75,6 +75,9 @@ enum OOVR_VRMessageOverlayResponse {
 	VRMessageOverlayResponse_ApplicationQuit = 6
 };
 
+// What the stubbed ShowMessageOverlay answers, see STUBBED: no box was shown, so no button was pressed
+inline OOVR_VRMessageOverlayResponse oovr_stub_default(OOVR_VRMessageOverlayResponse*) { return VRMessageOverlayResponse_CouldntFindSystemOverlay; }
+
 struct OOVR_VROverlayIntersectionParams_t {
 	vr::HmdVector3_t vSource;
 	vr::HmdVector3_t vDirection;

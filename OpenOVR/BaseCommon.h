@@ -24,10 +24,31 @@ public:
 
 #if defined(BASE_IMPL) || defined(GENFILE)
 
-#define STUBBED()                                                                                                            \
-	do {                                                                                                                     \
-		std::string str = "Hit stubbed file at " __FILE__ ":" + std::to_string(__LINE__) + " func " + std::string(__func__); \
-		OOVR_ABORT(str.c_str());                                                                                             \
+// What a stubbed function hands back once it has logged: a failure for the error enums, so the game
+// does not go on to read out parameters nothing wrote, and zero, false or an empty string otherwise.
+template <typename T> inline T oovr_stub_default(T*) { return T{}; }
+inline const char* oovr_stub_default(const char**) { return ""; }
+inline vr::EVROverlayError oovr_stub_default(vr::EVROverlayError*) { return vr::VROverlayError_RequestFailed; }
+inline vr::EVRInputError oovr_stub_default(vr::EVRInputError*) { return vr::VRInputError_NoData; }
+inline vr::EVRFirmwareError oovr_stub_default(vr::EVRFirmwareError*) { return vr::VRFirmwareError_Fail; }
+
+struct oovr_stub_result {
+	template <typename T> operator T() const { return oovr_stub_default((T*)nullptr); }
+};
+
+// A game calling something unimplemented used to be aborted behind an error box nobody could see in
+// the headset. These log the call once and carry on; stopOnSoftAbort brings the abort back.
+#undef STUBBED
+#define STUBBED_LOG() OOVR_SOFT_ABORTF("Hit stubbed file at " __FILE__ ":%d func %s", __LINE__, __func__)
+#define STUBBED()                  \
+	do {                           \
+		STUBBED_LOG();             \
+		return oovr_stub_result{}; \
+	} while (0)
+#define STUBBED_VOID() \
+	do {               \
+		STUBBED_LOG(); \
+		return;        \
 	} while (0)
 
 #endif

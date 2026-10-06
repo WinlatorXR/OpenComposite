@@ -12,24 +12,6 @@
 #include <codecvt>
 #endif
 
-#define STUBBED_BASIC()                                       \
-	{                                                         \
-		string str = "Hit stubbed file at " __FILE__ " func " \
-		             " line "                                 \
-		    + to_string(__LINE__);                            \
-		OOVR_ABORT_T(str.c_str(), "Stubbed func!");           \
-	}
-
-#undef STUBBED
-#define STUBBED()                                                          \
-	{                                                                      \
-		string str = "Hit stubbed file at " __FILE__ " func "              \
-		             " line "                                              \
-		    + to_string(__LINE__);                                         \
-		str += "via " + string(pchSection) + "." + string(pchSettingsKey); \
-		OOVR_ABORT_T(str.c_str(), "Stubbed func!");                        \
-	}
-
 #define UNSET_SETTING()                                                    \
 	{                                                                      \
 		string str = "Hit undefined setting at " __FILE__ " func "         \
@@ -59,7 +41,7 @@ const char* BaseSettings::GetSettingsErrorNameFromEnum(EVRSettingsError eError)
 		return "IPC Failed";
 	}
 	OOVR_LOG(to_string(eError).c_str());
-	STUBBED_BASIC();
+	STUBBED();
 }
 bool BaseSettings::Sync(bool bForce, EVRSettingsError* peError)
 {
@@ -317,12 +299,12 @@ void BaseSettings::RemoveSection(const char* pchSection, EVRSettingsError* peErr
 	if (peError)
 		*peError = VRSettingsError_None;
 
-	STUBBED_BASIC();
+	STUBBED_VOID();
 }
 void BaseSettings::RemoveKeyInSection(const char* pchSection, const char* pchSettingsKey, EVRSettingsError* peError)
 {
 	if (peError)
 		*peError = VRSettingsError_None;
 
-	STUBBED();
+	STUBBED_VOID();
 }
