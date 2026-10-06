@@ -150,6 +150,7 @@ int Config::ini_handler(void* user, const char* pSection,
 		CFGOPT(bool, initUsingVulkan);
 		CFGOPT(float, hiddenMeshVerticalScale);
 		CFGOPT(bool, logAllOpenVRCalls);
+		CFGOPT(bool, stickDeflectPressesTouchpad);
 	}
 
 #undef CFGOPT
@@ -188,6 +189,11 @@ Config::Config()
 #if !defined(SUPPORT_DX11)
 	initUsingVulkan = true;
 #endif
+
+	// A launcher can turn this on for one game without writing a config file; a config file still overrides it
+	const char* stickPress = getenv("OPENCOMPOSITE_STICK_PRESSES_TOUCHPAD");
+	if (stickPress && stickPress[0] == '1')
+		stickDeflectPressesTouchpad = true;
 
 	// If we're on Windows, look for a config file next to the DLL
 	// If we're on Linux, skip that and just check the working directory.
