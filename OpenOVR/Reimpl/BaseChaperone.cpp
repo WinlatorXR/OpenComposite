@@ -54,7 +54,7 @@ bool BaseChaperone::GetPlayAreaRect(HmdQuad_t* rect)
 }
 void BaseChaperone::ReloadInfo(void)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseChaperone::SetSceneColor(HmdColor_t color)
 {
@@ -62,7 +62,7 @@ void BaseChaperone::SetSceneColor(HmdColor_t color)
 }
 void BaseChaperone::GetBoundsColor(HmdColor_t* pOutputColorArray, int nNumOutputColors, float flCollisionBoundsFadeDistance, HmdColor_t* pOutputCameraColor)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 bool BaseChaperone::AreBoundsVisible()
 {

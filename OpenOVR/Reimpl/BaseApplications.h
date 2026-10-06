@@ -73,6 +73,10 @@ enum OOVR_EVRSceneApplicationState {
 	EVRSceneApplicationState_Waiting = 4, // Scene Application is running, but not drawing anything
 };
 
+// What the stubbed IVRApplications functions answer, see STUBBED. The scene application is the game asking.
+inline OOVR_EVRApplicationError oovr_stub_default(OOVR_EVRApplicationError*) { return VRApplicationError_UnknownApplication; }
+inline OOVR_EVRSceneApplicationState oovr_stub_default(OOVR_EVRSceneApplicationState*) { return EVRSceneApplicationState_Running; }
+
 struct OOVR_AppOverrideKeys_t {
 	const char* pchKey;
 	const char* pchValue;

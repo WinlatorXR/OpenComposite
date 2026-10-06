@@ -41,5 +41,5 @@ void BaseHeadsetView::SetHeadsetViewBlendRange(float flStartPct, float flEndPct)
 
 void BaseHeadsetView::GetHeadsetViewBlendRange(float* pStartPct, float* pEndPct)
 {
-	STUBBED();
+	STUBBED_VOID();
 }

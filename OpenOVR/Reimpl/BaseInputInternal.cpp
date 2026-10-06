@@ -2,10 +2,11 @@
 #define BASE_IMPL
 #include "BaseInputInternal.h"
 
-#define UKN_FUNC(id)                      \
-	void BaseInputInternal::UknFunc##id() \
-	{                                     \
-		STUBBED();                        \
+// Their arguments are unknown, so returning could leave the stack wrong: these still abort
+#define UKN_FUNC(id)                                                         \
+	void BaseInputInternal::UknFunc##id()                                    \
+	{                                                                        \
+		OOVR_ABORTF("Hit stubbed file at " __FILE__ " func %s", __func__); \
 	}
 
 UKN_FUNC(001);

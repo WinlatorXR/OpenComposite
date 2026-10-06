@@ -818,7 +818,7 @@ bool BaseSystem::CaptureInputFocus()
 
 void BaseSystem::ReleaseInputFocus()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 bool BaseSystem::IsInputFocusCapturedByAnotherProcess()
@@ -843,7 +843,7 @@ void BaseSystem::AcknowledgeQuit_Exiting()
 
 void BaseSystem::AcknowledgeQuit_UserPrompt()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 uint32_t BaseSystem::GetAppContainerFilePaths(VR_OUT_STRING() char* pchBuffer, uint32_t unBufferSize)
@@ -870,12 +870,12 @@ HmdMatrix44_t BaseSystem::GetProjectionMatrix(EVREye eye, float znear, float zfa
 
 void BaseSystem::PerformanceTestEnableCapture(bool bEnable)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 void BaseSystem::PerformanceTestReportFidelityLevelChange(int nFidelityLevel)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 // Tracking origin stuff

@@ -13,10 +13,11 @@ OOVR_EVR_ControlPanel_Error BaseControlPanel::RegisterExternalWebRoot()
 }
 
 // Unknown functions
-#define UKN_FUNC(id)                     \
-	void BaseControlPanel::UknFunc##id() \
-	{                                    \
-		STUBBED();                       \
+// Their arguments are unknown too, so returning could leave the stack wrong: these still abort
+#define UKN_FUNC(id)                                                         \
+	void BaseControlPanel::UknFunc##id()                                     \
+	{                                                                        \
+		OOVR_ABORTF("Hit stubbed file at " __FILE__ " func %s", __func__); \
 	}
 
 UKN_FUNC(00);

@@ -312,7 +312,8 @@ void BaseRenderModels::FreeTexture(RenderModel_TextureMap_t* texture)
 
 EVRRenderModelError BaseRenderModels::LoadTextureD3D11_Async(TextureID_t textureId, void* pD3D11Device, void** ppD3D11Texture2D)
 {
-	STUBBED();
+	STUBBED_LOG();
+	return VRRenderModelError_NotSupported;
 }
 
 EVRRenderModelError BaseRenderModels::LoadIntoTextureD3D11_Async(TextureID_t textureId, void* pDstTexture)
@@ -376,7 +377,7 @@ EVRRenderModelError BaseRenderModels::LoadIntoTextureD3D11_Async(TextureID_t tex
 
 void BaseRenderModels::FreeTextureD3D11(void* pD3D11Texture2D)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 uint32_t BaseRenderModels::GetRenderModelName(uint32_t unRenderModelIndex, VR_OUT_STRING() char* pchRenderModelName, uint32_t unRenderModelNameLen)

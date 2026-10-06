@@ -15,7 +15,7 @@ bool BaseChaperoneSetup::CommitWorkingCopy(EChaperoneConfigFile configFile)
 }
 void BaseChaperoneSetup::RevertWorkingCopy()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 bool BaseChaperoneSetup::GetWorkingPlayAreaSize(float* pSizeX, float* pSizeZ)
 {
@@ -78,19 +78,19 @@ void BaseChaperoneSetup::SetWorkingPlayAreaSize(float sizeX, float sizeZ)
 }
 void BaseChaperoneSetup::SetWorkingCollisionBoundsInfo(VR_ARRAY_COUNT(unQuadsCount) HmdQuad_t* pQuadsBuffer, uint32_t unQuadsCount)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseChaperoneSetup::SetWorkingSeatedZeroPoseToRawTrackingPose(const HmdMatrix34_t* pMatSeatedZeroPoseToRawTrackingPose)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseChaperoneSetup::SetWorkingStandingZeroPoseToRawTrackingPose(const HmdMatrix34_t* pMatStandingZeroPoseToRawTrackingPose)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseChaperoneSetup::ReloadFromDisk(EChaperoneConfigFile configFile)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 bool BaseChaperoneSetup::GetLiveSeatedZeroPoseToRawTrackingPose(HmdMatrix34_t* pmatSeatedZeroPoseToRawTrackingPose)
 {
@@ -98,7 +98,7 @@ bool BaseChaperoneSetup::GetLiveSeatedZeroPoseToRawTrackingPose(HmdMatrix34_t* p
 }
 void BaseChaperoneSetup::SetWorkingCollisionBoundsTagsInfo(VR_ARRAY_COUNT(unTagCount) uint8_t* pTagsBuffer, uint32_t unTagCount)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 bool BaseChaperoneSetup::GetLiveCollisionBoundsTagsInfo(VR_OUT_ARRAY_COUNT(punTagCount) uint8_t* pTagsBuffer, uint32_t* punTagCount)
 {
@@ -122,17 +122,17 @@ bool BaseChaperoneSetup::ImportFromBufferToWorking(const char* pBuffer, uint32_t
 }
 void BaseChaperoneSetup::SetWorkingPerimeter(VR_ARRAY_COUNT(unPointCount) const HmdVector2_t* pPointBuffer, uint32_t unPointCount)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseChaperoneSetup::ShowWorkingSetPreview()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseChaperoneSetup::HideWorkingSetPreview()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 void BaseChaperoneSetup::RoomSetupStarting()
 {
-	STUBBED();
+	STUBBED_VOID();
 }

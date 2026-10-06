@@ -845,7 +845,7 @@ EVROverlayError BaseOverlay::GetDashboardOverlaySceneProcess(VROverlayHandle_t u
 }
 void BaseOverlay::ShowDashboard(const char* pchOverlayToShow)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 TrackedDeviceIndex_t BaseOverlay::GetPrimaryDashboardDevice()
 {
@@ -981,7 +981,7 @@ void BaseOverlay::SetKeyboardTransformAbsolute(ETrackingUniverseOrigin eTracking
 }
 void BaseOverlay::SetKeyboardPositionForOverlay(VROverlayHandle_t ulOverlayHandle, HmdRect2_t avoidRect)
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 EVROverlayError BaseOverlay::SetOverlayIntersectionMask(VROverlayHandle_t ulOverlayHandle, OOVR_VROverlayIntersectionMaskPrimitive_t* pMaskPrimitives, uint32_t unNumMaskPrimitives, uint32_t unPrimitiveSize)
 {
@@ -997,7 +997,7 @@ BaseOverlay::VRMessageOverlayResponse BaseOverlay::ShowMessageOverlay(const char
 }
 void BaseOverlay::CloseMessageOverlay()
 {
-	STUBBED();
+	STUBBED_VOID();
 }
 
 EVROverlayError BaseOverlay::SetOverlayPreCurvePitch(vr::VROverlayHandle_t ulOverlayHandle, float fRadians)
