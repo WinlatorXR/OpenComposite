@@ -521,7 +521,8 @@ bool DX11Compositor::GetFormatInfo(DXGI_FORMAT format, DX11Compositor::DxgiForma
 		DEF_FMT_UNORM(DXGI_FORMAT_B5G5R5A1_UNORM, 16, 5, 4)
 		DEF_FMT_UNORM(DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM, 32, 10, 4)
 		DEF_FMT_UNORM(DXGI_FORMAT_B4G4R4A4_UNORM, 16, 4, 4)
-		DEF_FMT(DXGI_FORMAT_BC1, 64, 16, 4)
+		// BC1 is deliberately absent: a block compressed format cannot be a render target, so a
+		// swapchain made in it fails at the render target view (The Thrill of the Fight submits one)
 
 	default:
 		// Unknown type
