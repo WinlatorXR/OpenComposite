@@ -151,6 +151,7 @@ int Config::ini_handler(void* user, const char* pSection,
 		CFGOPT(float, hiddenMeshVerticalScale);
 		CFGOPT(bool, logAllOpenVRCalls);
 		CFGOPT(bool, stickDeflectPressesTouchpad);
+		CFGOPT(bool, controllersAtStartup);
 	}
 
 #undef CFGOPT
@@ -190,7 +191,11 @@ Config::Config()
 	initUsingVulkan = true;
 #endif
 
-	// A launcher can turn this on for one game without writing a config file; a config file still overrides it
+	// A launcher can turn these on for one game without writing a config file; a config file still overrides them
+	const char* controllersAtStart = getenv("OPENCOMPOSITE_CONTROLLERS_AT_STARTUP");
+	if (controllersAtStart && controllersAtStart[0] == '1')
+		controllersAtStartup = true;
+
 	const char* stickPress = getenv("OPENCOMPOSITE_STICK_PRESSES_TOUCHPAD");
 	if (stickPress && stickPress[0] == '1')
 		stickDeflectPressesTouchpad = true;
