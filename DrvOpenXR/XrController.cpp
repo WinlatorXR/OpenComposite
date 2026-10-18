@@ -5,6 +5,8 @@
 #include "../OpenOVR/Reimpl/BaseInput.h"
 #include "generated/static_bases.gen.h"
 
+std::string GetExeName(); // DrvOpenXR.cpp
+
 XrController::XrController(XrController::XrControllerType type, const InteractionProfile& profile)
     : type(type), profile(profile)
 {
@@ -100,6 +102,17 @@ uint32_t XrController::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty
 
 	if (pErrorL)
 		*pErrorL = vr::TrackedProp_Success;
+
+	// Google Earth VR only recognises Touch controllers whose model number contains "Rift" and
+	// "Left"/"Right", and draws no controllers otherwise. Use the names SteamVR gives a Rift CV1.
+	static const bool isGoogleEarthVR = GetExeName() == "Earth.exe";
+	if (isGoogleEarthVR && prop == vr::Prop_ModelNumber_String && profile.GetPath() == "/interaction_profiles/oculus/touch_controller") {
+		const char* model = GetHand() == HAND_RIGHT ? "Oculus Rift CV1 (Right Controller)" : "Oculus Rift CV1 (Left Controller)";
+		if (value != NULL && bufferSize > 0) {
+			strcpy_s(value, bufferSize, model);
+		}
+		return (uint32_t)strlen(model) + 1;
+	}
 
 	std::optional<std::string> ret = profile.GetProperty<std::string>(prop, GetHand());
 	if (ret.has_value()) {
