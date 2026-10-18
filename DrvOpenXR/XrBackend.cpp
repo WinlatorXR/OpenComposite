@@ -23,6 +23,7 @@
 #endif
 
 // FIXME find a better way to send the OnPostFrame call?
+#include "../OpenOVR/Misc/Config.h"
 #include "../OpenOVR/Reimpl/BaseInput.h"
 #include "../OpenOVR/Reimpl/BaseOverlay.h"
 #include "../OpenOVR/Reimpl/BaseSystem.h"
@@ -42,6 +43,8 @@
 #endif
 
 #include <algorithm>
+
+std::string GetExeName(); // DrvOpenXR.cpp
 #include <chrono>
 #include <cinttypes>
 #include <mutex>
@@ -76,6 +79,16 @@ XrBackend::XrBackend(bool useVulkanTmpGfx, bool useD3D11TmpGfx)
 
 		if (dev)
 			dev->InitialiseDevice(i);
+	}
+
+	// Some games (Google Earth VR) only set up controllers that are present at startup, but the runtime reports
+	// them later. Start with Touch controllers; UpdateInteractionProfile replaces them with the real ones.
+	if (oovr_global_configuration.ControllersAtStartup() || GetExeName() == "Earth.exe") {
+		const InteractionProfile* touch = InteractionProfile::GetProfileByPath("/interaction_profiles/oculus/touch_controller");
+		hand_left = std::make_shared<XrController>(XrController::XCT_LEFT, *touch);
+		hand_right = std::make_shared<XrController>(XrController::XCT_RIGHT, *touch);
+		hmd->SetInteractionProfile(touch);
+		placeholderHands = true;
 	}
 }
 
@@ -832,7 +845,7 @@ void XrBackend::PumpEvents()
 	   the temporary session.
    */
 	BaseInput* input = GetUnsafeBaseInput();
-	if (input && !input->AreActionsLoaded() && sessionState == XR_SESSION_STATE_FOCUSED && !hand_left && !hand_right) {
+	if (input && !input->AreActionsLoaded() && sessionState == XR_SESSION_STATE_FOCUSED && ((!hand_left && !hand_right) || placeholderHands)) {
 		QueryForInteractionProfile();
 	}
 }
@@ -938,6 +951,7 @@ void XrBackend::UpdateInteractionProfile()
 					OOVR_LOGF("%s - Using interaction profile: %s", info.pathstr, path_name);
 					info.controller = std::make_unique<XrController>(info.hand, *profile);
 					hmd->SetInteractionProfile(profile.get());
+					placeholderHands = false;
 					BaseSystem* system = GetUnsafeBaseSystem();
 					if (system) {
 						VREvent_t event = {

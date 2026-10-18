@@ -407,6 +407,10 @@ uint32_t XrHMD::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty prop,
 
 	PROP(vr::Prop_ControllerType_String, "oculus"); // If this is null on the HMD VRChat ignores the HMD entirely
 
+	// Used before an interaction profile is known. Google Earth VR reads this once at startup and
+	// treats the headset as unknown (no controllers drawn) unless it starts with "Oculus" or "Vive".
+	PROP(vr::Prop_ModelNumber_String, "Oculus Rift CV1");
+
 	return XrTrackedDevice::GetStringTrackedDeviceProperty(prop, value, bufferSize, pErrorL);
 }
 

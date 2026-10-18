@@ -19,6 +19,7 @@ public:
 	float HiddenMeshVerticalScale() const { return hiddenMeshVerticalScale; }
 	inline bool LogAllOpenVRCalls() const { return logAllOpenVRCalls; }
 	inline bool StickDeflectPressesTouchpad() const { return stickDeflectPressesTouchpad; }
+	inline bool ControllersAtStartup() const { return controllersAtStartup; }
 
 private:
 	static int ini_handler(
@@ -40,6 +41,7 @@ private:
 	float hiddenMeshVerticalScale = 1.0f;
 	bool logAllOpenVRCalls = false;
 	bool stickDeflectPressesTouchpad = false;
+	bool controllersAtStartup = false;
 };
 
 extern Config oovr_global_configuration;
