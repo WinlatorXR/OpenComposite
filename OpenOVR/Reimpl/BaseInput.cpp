@@ -39,6 +39,8 @@ using namespace vr;
 
 #include "../DrvOpenXR/XrBackend.h"
 
+std::string GetExeName(); // DrvOpenXR.cpp
+
 // On Android, the application must supply a function to load the contents of a file
 
 /**
@@ -2699,6 +2701,11 @@ bool BaseInput::GetLegacyControllerState(vr::TrackedDeviceIndex_t controllerDevi
 	bindButton(ctrl.gripClick, XR_NULL_HANDLE, vr::k_EButton_Grip);
 	bindButton(ctrl.triggerClick, ctrl.triggerTouch, vr::k_EButton_SteamVR_Trigger);
 	bindButton(XR_NULL_HANDLE, XR_NULL_HANDLE, vr::k_EButton_Axis2); // FIXME clean up? Is this the grip?
+
+	// Google Earth VR reads the Touch grip as the Axis2 button, which SteamVR sets along with Grip
+	static const bool gripAlsoAxis2 = GetExeName() == "Earth.exe";
+	if (gripAlsoAxis2 && (state->ulButtonPressed & (1ull << vr::k_EButton_Grip)))
+		state->ulButtonPressed |= 1ull << vr::k_EButton_Axis2;
 
 	// Read the analogue values
 	auto readFloat = [](XrAction action) -> float {
