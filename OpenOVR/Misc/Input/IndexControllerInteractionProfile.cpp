@@ -101,12 +101,6 @@ IndexControllerInteractionProfile::IndexControllerInteractionProfile()
 	glm::mat4 bodyRight = GetMat4x4FromOriginAndEulerRotations(
 	    { 0.005154, 0.013042, 0.107171 },
 	    { 93.782, 0.0, 0.0 });
-	glm::mat4 tipLeft = GetMat4x4FromOriginAndEulerRotations(
-	    { 0.006, -0.015, 0.02 },
-	    { -40.0, -5.0, 0.0 });
-	glm::mat4 tipRight = GetMat4x4FromOriginAndEulerRotations(
-	    { -0.006, -0.015, 0.02 },
-	    { -40.0, 5.0, 0.0 });
 	glm::mat4 baseLeft = GetMat4x4FromOriginAndEulerRotations(
 	    { 0.004758, -0.037977, 0.200466 },
 	    { -155.4, -0.427, 7.081 });
@@ -119,8 +113,8 @@ IndexControllerInteractionProfile::IndexControllerInteractionProfile()
 
 	this->leftComponentTransforms["body"] = glm::affineInverse(bodyLeft);
 	this->rightComponentTransforms["body"] = glm::affineInverse(bodyRight);
-	this->leftComponentTransforms["tip"] = glm::affineInverse(tipLeft);
-	this->rightComponentTransforms["tip"] = glm::affineInverse(tipRight);
+	// No "tip" entry: BaseRenderModels derives it from the runtime's aim pose, which points where the
+	// controller points whatever hardware is behind this profile (the fixed offset aimed far too high)
 	this->leftComponentTransforms["base"] = glm::affineInverse(baseLeft);
 	this->rightComponentTransforms["base"] = glm::affineInverse(baseRight);
 	this->leftComponentTransforms["gdc2015"] = glm::affineInverse(gdc);

@@ -10,6 +10,7 @@
 #include "Misc/ScopeGuard.h"
 #include "convert.h"
 #include "generated/static_bases.gen.h"
+#include <glm/gtc/quaternion.hpp>
 #include <string>
 
 using glm::mat4;
@@ -79,6 +80,30 @@ public:
 		return false;                                     \
 	}
 
+// Where an overlay's quad goes. The transform's columns are the overlay's axes, scaled: their lengths
+// scale the quad, and what is left once they are normalised is its rotation.
+struct OverlayQuad {
+	XrPosef pose;
+	float width, height;
+};
+static OverlayQuad GetOverlayQuad(const MfMatrix4f& t, float widthMeters, const XrRect2Di& srcSize)
+{
+	const float aspect = srcSize.extent.height > 0 ? (float)srcSize.extent.width / (float)srcSize.extent.height : 1.0f;
+	const glm::vec3 axisX(t[0][0], t[1][0], t[2][0]), axisY(t[0][1], t[1][1], t[2][1]), axisZ(t[0][2], t[1][2], t[2][2]);
+	const float scaleX = glm::length(axisX), scaleY = glm::length(axisY), scaleZ = glm::length(axisZ);
+
+	glm::quat rotation(1.0f, 0.0f, 0.0f, 0.0f);
+	if (scaleX > 0.0f && scaleY > 0.0f && scaleZ > 0.0f)
+		rotation = glm::normalize(glm::quat_cast(glm::mat3(axisX / scaleX, axisY / scaleY, axisZ / scaleZ)));
+
+	OverlayQuad quad;
+	quad.pose.orientation = G2X_quat(rotation);
+	quad.pose.position = { t[0][3], t[1][3], t[2][3] };
+	quad.width = widthMeters * scaleX;
+	quad.height = widthMeters * scaleY / aspect;
+	return quad;
+}
+
 BaseOverlay::~BaseOverlay()
 {
 	for (const auto& kv : overlays) {
@@ -135,17 +160,16 @@ int BaseOverlay::_BuildLayers(XrCompositionLayerBaseHeader* sceneLayer, XrCompos
 				continue;
 			}
 
-			// Calculate the texture's aspect ratio
-			const float aspect = srcSize.extent.height > 0 ? (float)srcSize.extent.width / (float)srcSize.extent.height : 1.0f;
-			// ... and use that to set the size of the overlay, as it will appear to the user
+			// Size the overlay from its width, its transform's scale and the texture's aspect ratio, as it will
+			//  appear to the user, and place it with the transform's position and rotation.
 			// Note we shouldn't do this when setting the texture, as the user may change the width of
 			//  the overlay without changing the texture.
-			overlay.layerQuad.size.width = overlay.widthMeters * overlay.overlayTransform[0][0];
-			overlay.layerQuad.size.height = overlay.widthMeters * overlay.overlayTransform[1][1] / aspect;
+			const OverlayQuad quad = GetOverlayQuad(overlay.overlayTransform, overlay.widthMeters, srcSize);
+			overlay.layerQuad.size.width = quad.width;
+			overlay.layerQuad.size.height = quad.height;
 
 			// Finally, add it to the list of layers to be sent to LibOVR
-			overlay.layerQuad.pose = { { 0.f, 0.f, 0.f, 1.f },
-				{ overlay.overlayTransform[0][3], overlay.overlayTransform[1][3], overlay.overlayTransform[2][3] } };
+			overlay.layerQuad.pose = quad.pose;
 
 			layerHeaders.push_back((XrCompositionLayerBaseHeader*)&overlay.layerQuad);
 		}
@@ -680,35 +704,34 @@ bool BaseOverlay::ComputeOverlayIntersection(VROverlayHandle_t ulOverlayHandle, 
 	if (!pParams || !pResults)
 		return false;
 
-	// Intersect with the same quad _BuildLayers submits: centred on the transform's translation,
-	// unrotated (so facing +Z), and sized from the width, the transform's scale and the texture aspect
-	const XrRect2Di& srcSize = overlay->layerQuad.subImage.imageRect;
-	const float aspect = srcSize.extent.height > 0 ? (float)srcSize.extent.width / (float)srcSize.extent.height : 1.0f;
-	const float width = overlay->widthMeters * overlay->overlayTransform[0][0];
-	const float height = overlay->widthMeters * overlay->overlayTransform[1][1] / aspect;
-	const float centre[3] = { overlay->overlayTransform[0][3], overlay->overlayTransform[1][3], overlay->overlayTransform[2][3] };
-
-	const float* src = pParams->vSource.v;
-	const float* dir = pParams->vDirection.v;
-	if (fabsf(dir[2]) < 1e-6f || width == 0.0f || height == 0.0f)
+	// Intersect with the same quad _BuildLayers submits, working in the quad's own frame (facing +Z)
+	const OverlayQuad quad = GetOverlayQuad(overlay->overlayTransform, overlay->widthMeters, overlay->layerQuad.subImage.imageRect);
+	if (quad.width == 0.0f || quad.height == 0.0f)
 		return false;
 
-	const float distance = (centre[2] - src[2]) / dir[2];
+	const glm::quat rotation = X2G_quat(quad.pose.orientation);
+	const glm::quat inverse = glm::conjugate(rotation);
+	const glm::vec3 centre = X2G_v3f(quad.pose.position);
+	const glm::vec3 src = inverse * (S2G_v3f(pParams->vSource) - centre);
+	const glm::vec3 dir = inverse * S2G_v3f(pParams->vDirection);
+	if (fabsf(dir.z) < 1e-6f)
+		return false;
+
+	const float distance = -src.z / dir.z;
 	if (distance < 0.0f)
 		return false;
 
-	const float x = src[0] + dir[0] * distance;
-	const float y = src[1] + dir[1] * distance;
-	const float u = (x - centre[0]) / width + 0.5f;
-	const float v = (y - centre[1]) / height + 0.5f;
+	const glm::vec3 local = src + dir * distance;
+	const float u = local.x / quad.width + 0.5f;
+	const float v = local.y / quad.height + 0.5f;
 	if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f)
 		return false;
 
-	pResults->vPoint = { x, y, centre[2] };
-	pResults->vNormal = { 0.0f, 0.0f, 1.0f };
+	pResults->vPoint = G2S_v3f(centre + rotation * local);
+	pResults->vNormal = G2S_v3f(rotation * glm::vec3(0.0f, 0.0f, 1.0f));
 	// OpenVR's overlay coordinates put (0,0) at the bottom left
 	pResults->vUVs = { u, v };
-	pResults->fDistance = distance * sqrtf(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]);
+	pResults->fDistance = distance * glm::length(dir);
 	return true;
 }
 bool BaseOverlay::HandleControllerOverlayInteractionAsMouse(VROverlayHandle_t ulOverlayHandle, TrackedDeviceIndex_t unControllerDeviceIndex)
