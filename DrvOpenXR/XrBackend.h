@@ -64,6 +64,7 @@ private:
 	std::shared_ptr<XrHMD> hmd = std::make_shared<XrHMD>();
 	std::shared_ptr<XrController> hand_left;
 	std::shared_ptr<XrController> hand_right;
+	bool placeholderHands = false; // hands made before the runtime reported an interaction profile
 
 	std::vector<std::shared_ptr<XrGenericTracker>> generic_trackers;
 	std::shared_mutex generic_trackers_mutex;

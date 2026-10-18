@@ -31,6 +31,8 @@
 
 using namespace vr;
 
+std::string GetExeName(); // DrvOpenXR.cpp
+
 namespace {
 
 class PropertyPrinter {
@@ -556,6 +558,15 @@ void BaseSystem::_OnPostFrame()
 
 	if (inputSystem) {
 		inputSystem->InternalUpdate();
+	}
+
+	// Google Earth VR uses legacy input and waits for button press events, which this port never sent.
+	// Only for Earth: polling the legacy state loads the empty manifest, which would break IVRInput games.
+	static const bool sendLegacyButtonEvents = GetExeName() == "Earth.exe";
+	if (sendLegacyButtonEvents && inputSystem) {
+		static VRControllerState_t lastLeft{}, lastRight{};
+		CheckControllerEvents(leftHandIndex, lastLeft);
+		CheckControllerEvents(rightHandIndex, lastRight);
 	}
 }
 
