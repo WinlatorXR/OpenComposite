@@ -942,6 +942,7 @@ void BaseInput::LoadBindingsSet(const InteractionProfile& profile, const std::st
 				XrPath path;
 				OOVR_FAILED_XR_ABORT(xrStringToPath(xr_instance, pathStr.c_str(), &path));
 				bindings.push_back(XrActionSuggestedBinding{ action->xr, path });
+				action->perProfileData[&profile].directBinding = true;
 			}
 		}
 
@@ -1388,8 +1389,11 @@ XrResult BaseInput::getBooleanOrDpadData(const InteractionProfile* profile, Acti
 		return XR_SUCCESS;
 	}
 
-	// If an action is bound to a dpad or dclick action in every profile, action.xr will be XR_NULL_HANDLE
-	if (action.xr != XR_NULL_HANDLE) {
+	// If an action is bound to a dpad or dclick action in every profile, action.xr will be XR_NULL_HANDLE.
+	// Nor read it when this profile only binds it through dpads or double clicks: it has no source here,
+	// and a runtime may still answer it from the queried hand (Half-Life 2 VR snap turned from the left stick)
+	const bool onlyDpadOrDClick = !perProfileData.directBinding && (!perProfileData.dpadBindings.empty() || !perProfileData.dclickBindings.empty());
+	if (action.xr != XR_NULL_HANDLE && !onlyDpadOrDClick) {
 		// XrResult ret = xrGetActionStateBoolean(xr_session.get(), getInfo, state);
 		// OOVR_FAILED_XR_ABORT(ret);
 

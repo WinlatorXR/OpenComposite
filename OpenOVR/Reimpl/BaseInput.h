@@ -599,6 +599,9 @@ private:
 		// list of double click input bindings
 		std::vector<DClickBindingInfo> dclickBindings;
 
+		// whether the action itself is bound to an input in this profile, rather than only through dpads or double clicks
+		bool directBinding = false;
+
 		// contains all subaction paths which are forced by bindings to always return true (for boolean queries)
 		std::vector<XrPath> forcedSubactionPaths;
 		// parameters to modify how some inputs behave. There's probably a cleaner way to do this, but whatever
