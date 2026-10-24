@@ -49,6 +49,9 @@ std::string GetExeName(); // DrvOpenXR.cpp
 #include <cinttypes>
 #include <mutex>
 
+extern XrFovf xr_game_fov[XruEyeCount];
+extern bool xr_game_fov_valid[XruEyeCount];
+
 using namespace vr;
 
 std::mutex inputRestartMutex;
@@ -537,11 +540,24 @@ void XrBackend::SubmitFrames(bool showSkybox, bool postPresent)
 		mainLayer.viewCount = 2;
 
 		app_layer = (XrCompositionLayerBaseHeader*)&mainLayer;
+		static int fovFrames = 0, fovStale = 0;
+		bool stale = false;
 		for (uint32_t i = 0; i < mainLayer.viewCount; ++i) {
 			XrCompositionLayerProjectionView& layer = projectionViews[i];
 			layer.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
+			// Submit the FOV the game was given, which it may have kept from an earlier frame
+			if (xr_game_fov_valid[i]) {
+				if (memcmp(&layer.fov, &xr_game_fov[i], sizeof(XrFovf)) != 0)
+					stale = true;
+				layer.fov = xr_game_fov[i];
+			}
 			if (layer.subImage.swapchain == XR_NULL_HANDLE)
 				app_layer = nullptr;
+		}
+		fovStale += stale;
+		if (++fovFrames == 900) {
+			OOVR_LOGF("Submitted with the game's kept FOV instead of the current one on %d of 900 frames", fovStale);
+			fovFrames = fovStale = 0;
 		}
 		submittedEyeTextures = false;
 	}
