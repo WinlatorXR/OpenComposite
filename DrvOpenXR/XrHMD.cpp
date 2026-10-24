@@ -18,6 +18,15 @@
 XrFovf xr_game_fov[XruEyeCount] = {};
 bool xr_game_fov_valid[XruEyeCount] = {};
 
+static void RecordGameFov(int eye, const XrFovf& fov)
+{
+	// Zero angles come before the runtime has real view data; never submit those
+	if (fov.angleUp == fov.angleDown || fov.angleLeft == fov.angleRight)
+		return;
+	xr_game_fov[eye] = fov;
+	xr_game_fov_valid[eye] = true;
+}
+
 void XrHMD::GetRecommendedRenderTargetSize(uint32_t* width, uint32_t* height)
 {
 	*width = (uint32_t)((float)xr_main_view(XruEyeLeft).recommendedImageRectWidth * oovr_global_configuration.SupersampleRatio());
@@ -46,8 +55,7 @@ vr::HmdMatrix44_t XrHMD::GetProjectionMatrix(vr::EVREye eEye, float fNearZ, floa
 	// Also calculate the projection matrix as row major (so one column determines one value when multiplied with a
 	// vector) and then transpose it back to being a column-major vector.
 	const XrFovf& fov = views[eEye].fov;
-	xr_game_fov[eEye] = fov;
-	xr_game_fov_valid[eEye] = true;
+	RecordGameFov(eEye, fov);
 
 	float twoNear = fNearZ * 2;
 	float tanL = tanf(fov.angleLeft);
@@ -105,8 +113,7 @@ void XrHMD::GetProjectionRaw(vr::EVREye eEye, float* pfLeft, float* pfRight, flo
 	OOVR_FALSE_ABORT(cachedViews.viewCount == XruEyeCount);
 
 	const XrFovf& fov = views[eEye].fov;
-	xr_game_fov[eEye] = fov;
-	xr_game_fov_valid[eEye] = true;
+	RecordGameFov(eEye, fov);
 
 	/**
 	 * With a straight passthrough:
