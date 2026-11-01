@@ -9,6 +9,7 @@
 #include "XrController.h"
 #include "XrHMD.h"
 
+#include <chrono>
 #include <memory>
 #include <vector>
 #include <mutex>
@@ -115,6 +116,9 @@ private:
 
 	// Keep track of if eye textures have been submitted and if we need to create a projection layer for them
 	bool submittedEyeTextures = false;
+
+	// When the app last stored an eye texture, so a menu that only shows overlays can be told apart
+	std::chrono::steady_clock::time_point lastEyeTextureTime{};
 
 	// If the app is using PostPresentHandoff then we need to delay when we submit frame data through xrEndFrame
 	// until after all frame and layer data has been submitted and PostPresentHandoff is called. Otherwise we

@@ -104,6 +104,30 @@ static OverlayQuad GetOverlayQuad(const MfMatrix4f& t, float widthMeters, const 
 	return quad;
 }
 
+// An overlay attached to a tracked device (the headset or a controller) follows it: put the
+// device's pose and the overlay's offset together, in the space the game is tracking in.
+static MfMatrix4f GetDeviceRelativeTransform(TrackedDeviceIndex_t device, const HmdMatrix34_t& offset, const MfMatrix4f& fallback)
+{
+	TrackedDevicePose_t pose = {};
+	BackendManager::Instance().GetSinglePose(GetUnsafeBaseCompositor()->GetTrackingSpace(), device, &pose, TrackingStateType_Rendering);
+	if (!pose.bPoseIsValid)
+		return fallback;
+
+	const HmdMatrix34_t& d = pose.mDeviceToAbsoluteTracking;
+	HmdMatrix34_t m;
+	for (int r = 0; r < 3; r++) {
+		for (int c = 0; c < 4; c++) {
+			m.m[r][c] = d.m[r][0] * offset.m[0][c] + d.m[r][1] * offset.m[1][c] + d.m[r][2] * offset.m[2][c];
+			if (c == 3)
+				m.m[r][c] += d.m[r][3];
+		}
+	}
+
+	MfMatrix4f result;
+	S2O_om44(m, result);
+	return result;
+}
+
 BaseOverlay::~BaseOverlay()
 {
 	for (const auto& kv : overlays) {
@@ -164,7 +188,10 @@ int BaseOverlay::_BuildLayers(XrCompositionLayerBaseHeader* sceneLayer, XrCompos
 			//  appear to the user, and place it with the transform's position and rotation.
 			// Note we shouldn't do this when setting the texture, as the user may change the width of
 			//  the overlay without changing the texture.
-			const OverlayQuad quad = GetOverlayQuad(overlay.overlayTransform, overlay.widthMeters, srcSize);
+			const MfMatrix4f transform = overlay.transformType == VROverlayTransform_TrackedDeviceRelative
+			    ? GetDeviceRelativeTransform(overlay.transformData.deviceRelative.device, overlay.transformData.deviceRelative.offset, overlay.overlayTransform)
+			    : overlay.overlayTransform;
+			const OverlayQuad quad = GetOverlayQuad(transform, overlay.widthMeters, srcSize);
 			overlay.layerQuad.size.width = quad.width;
 			overlay.layerQuad.size.height = quad.height;
 
@@ -705,7 +732,10 @@ bool BaseOverlay::ComputeOverlayIntersection(VROverlayHandle_t ulOverlayHandle, 
 		return false;
 
 	// Intersect with the same quad _BuildLayers submits, working in the quad's own frame (facing +Z)
-	const OverlayQuad quad = GetOverlayQuad(overlay->overlayTransform, overlay->widthMeters, overlay->layerQuad.subImage.imageRect);
+	const MfMatrix4f transform = overlay->transformType == VROverlayTransform_TrackedDeviceRelative
+	    ? GetDeviceRelativeTransform(overlay->transformData.deviceRelative.device, overlay->transformData.deviceRelative.offset, overlay->overlayTransform)
+	    : overlay->overlayTransform;
+	const OverlayQuad quad = GetOverlayQuad(transform, overlay->widthMeters, overlay->layerQuad.subImage.imageRect);
 	if (quad.width == 0.0f || quad.height == 0.0f)
 		return false;
 
@@ -723,13 +753,13 @@ bool BaseOverlay::ComputeOverlayIntersection(VROverlayHandle_t ulOverlayHandle, 
 
 	const glm::vec3 local = src + dir * distance;
 	const float u = local.x / quad.width + 0.5f;
-	const float v = local.y / quad.height + 0.5f;
+	const float v = 0.5f - local.y / quad.height;
 	if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f)
 		return false;
 
 	pResults->vPoint = G2S_v3f(centre + rotation * local);
 	pResults->vNormal = G2S_v3f(rotation * glm::vec3(0.0f, 0.0f, 1.0f));
-	// OpenVR's overlay coordinates put (0,0) at the bottom left
+	// (0,0) is the top left of the overlay as shown: Half-Life: VR, made against SteamVR, feeds v straight into a top-down UI
 	pResults->vUVs = { u, v };
 	pResults->fDistance = distance * glm::length(dir);
 	return true;
