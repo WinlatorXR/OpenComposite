@@ -753,13 +753,13 @@ bool BaseOverlay::ComputeOverlayIntersection(VROverlayHandle_t ulOverlayHandle, 
 
 	const glm::vec3 local = src + dir * distance;
 	const float u = local.x / quad.width + 0.5f;
-	const float v = 0.5f - local.y / quad.height;
+	const float v = local.y / quad.height + 0.5f;
 	if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f)
 		return false;
 
 	pResults->vPoint = G2S_v3f(centre + rotation * local);
 	pResults->vNormal = G2S_v3f(rotation * glm::vec3(0.0f, 0.0f, 1.0f));
-	// (0,0) is the top left of the overlay as shown: Half-Life: VR, made against SteamVR, feeds v straight into a top-down UI
+	// OpenVR's overlay coordinates put (0,0) at the bottom left
 	pResults->vUVs = { u, v };
 	pResults->fDistance = distance * glm::length(dir);
 	return true;
