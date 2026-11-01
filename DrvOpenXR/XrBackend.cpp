@@ -413,6 +413,20 @@ void XrBackend::WaitForTrackingData()
 		return;
 	}
 
+	// A game showing only overlays, such as Half-Life: VR at its main menu, calls WaitGetPoses every frame
+	// but never submits, so the frame it began is never ended and the overlays never reach the runtime.
+	// SteamVR keeps drawing overlays on its own: end that frame with just the overlays.
+	if (renderingFrame && std::chrono::steady_clock::now() - lastEyeTextureTime > std::chrono::milliseconds(500)) {
+		BaseOverlay* overlay = GetUnsafeBaseOverlay();
+		XrCompositionLayerBaseHeader const* const* overlayLayers = nullptr;
+		if (overlay && overlay->_BuildLayers(nullptr, overlayLayers) > 0) {
+			// Keep the PostPresentHandoff state, so the game's own next frame is not skipped
+			bool savedPostPresentStatus = postPresentStatus;
+			SubmitFrames(false, true);
+			postPresentStatus = savedPostPresentStatus;
+		}
+	}
+
 	XrFrameWaitInfo waitInfo{ XR_TYPE_FRAME_WAIT_INFO };
 	XrFrameState state{ XR_TYPE_FRAME_STATE };
 
@@ -483,6 +497,7 @@ void XrBackend::StoreEyeTexture(
 		comp.Invoke(texture, bounds, layer.subImage, (XruEye)eye, submitFlags);
 
 	submittedEyeTextures = true;
+	lastEyeTextureTime = std::chrono::steady_clock::now();
 
 	// TODO store view somewhere and use it for submitting our frame
 
