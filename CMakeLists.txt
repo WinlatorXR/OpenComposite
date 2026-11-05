@@ -46,7 +46,8 @@ if(FORCE_COLORED_OUTPUT)
 endif()
 
 if (MSVC)
-	add_compile_definitions(_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
+	# Games often load an msvcp140 older than 14.40, which crashes locking a constexpr-built std::mutex
+	add_compile_definitions(_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
 	add_compile_options(/W3
 		# ignored errors
 		/wd4305 # truncation from double to float
